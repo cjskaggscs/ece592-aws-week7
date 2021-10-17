@@ -1,5 +1,5 @@
 # Create S3 bucket
-resource "aws_s3_bucket" "week7-s3bucket" {
+resource "aws_s3_bucket" "week7-s3Bucket" {
   bucket = "ece592-week7-skaggsc"
   acl    = "private"
 
@@ -25,3 +25,18 @@ resource "aws_s3_bucket" "week7-s3bucket" {
   }
 }
 
+# Create S3 bucket notification
+resource "aws_s3_bucket_notification" "week7-S3BucketNotification" {
+    bucket = aws_s3_bucket.week7-s3Bucket.id
+    lambda_function {
+        lambda_function_arn = aws_lambda_function.lambda.arn
+        events = ["s3:ObjectCreated:*"]
+    }
+}
+
+# Create lambda permission
+resource "aws_lambda_permission" "week7-lambdaPermission" {
+    action = "lambda:InvokeFunction"
+    principal = "s3.amazonaws.com"
+    function_name = aws_lambda_function.lambda.arn
+}
